@@ -1,0 +1,10 @@
+# Virtual Environments
+.venv
+
+# IDE & development
+.idea
+__pycache__
+.vscode/
+
+# Mac
+.DS_Store
