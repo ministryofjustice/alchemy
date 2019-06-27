@@ -1,0 +1,39 @@
+version: 2
+
+workflows:
+  path_to_live:
+    jobs:
+      - lambda_build/build_sam
+
+orbs:
+  lambda_build:
+    commands:
+      install_aws_cli:
+        steps:
+          - run:
+              name: Install AWS CLI
+              command: sudo pip3 install awscli --upgrade
+      install_sam_cli:
+        steps:
+          - run:
+              name: Install SAM CLI
+              command: sudo pip3 install aws-sam-cli --upgrade
+    executors:
+      python:
+        docker: [image: circleci/python]
+      lamci:
+        docker: [image: lambci/lambda-base-2:build]
+
+    jobs:
+      build_sam:
+        executor: lamci
+        steps:
+          - checkout
+          - setup_remote_docker:
+              version: 18.06.0-ce
+              docker_layer_caching: false
+          - install_sam_cli
+          - run:
+              name:
+              command: |
+                sam build

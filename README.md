@@ -17,11 +17,3 @@ OPG Document Conversion Lambda: Managed by opg-org-infra &amp; Terraform
 ```bash
 sam local invoke HelloWorldFunction --event event.json
 ```
-
-```bash
-python3 -m virtualenv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```g
-
-
