@@ -1,12 +1,12 @@
-version: 2
+version: 2.1
 
 workflows:
   path_to_live:
     jobs:
-      - lambda_build/build_sam
+      - lambda-build/build_sam
 
 orbs:
-  lambda_build:
+  lambda-build:
     commands:
       install_aws_cli:
         steps:
@@ -26,13 +26,13 @@ orbs:
 
     jobs:
       build_sam:
-        executor: lamci
+        executor: python
         steps:
           - checkout
+          - install_sam_cli
           - setup_remote_docker:
               version: 18.06.0-ce
               docker_layer_caching: false
-          - install_sam_cli
           - run:
               name:
               command: |
