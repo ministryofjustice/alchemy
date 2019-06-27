@@ -3,7 +3,8 @@ OPG Document Conversion Lambda: Managed by opg-org-infra &amp; Terraform
 
 ## Requirements
 
-* AWS CLI already configured with Administrator permission
+* [AWS CLI](https://aws.amazon.com/cli/)
+* [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 * [Python 3 installed](https://www.python.org/downloads/)
 * [Docker installed](https://www.docker.com/community-edition)
 
