@@ -3,8 +3,11 @@ version: 2.1
 workflows:
   path_to_live:
     jobs:
-      - alchemy-build/fetch-pandoc
-      - alchemy-build/build_sam
+      - alchemy-build/fetch-pandoc:
+          name: fetch_pandoc
+      - alchemy-build/build_sam:
+          name: build_sam
+          requires: [fetch_pandoc]
 
 orbs:
   alchemy-build:
