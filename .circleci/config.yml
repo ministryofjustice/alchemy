@@ -3,16 +3,12 @@ version: 2.1
 workflows:
   path_to_live:
     jobs:
-      - lambda-build/build_sam
+      - alchemy-build/fetch-pandoc
+      - alchemy-build/build_sam
 
 orbs:
-  lambda-build:
+  alchemy-build:
     commands:
-      install_aws_cli:
-        steps:
-          - run:
-              name: Install AWS CLI
-              command: sudo pip3 install awscli --upgrade
       install_sam_cli:
         steps:
           - run:
@@ -25,6 +21,21 @@ orbs:
         docker: [image: lambci/lambda-base-2:build]
 
     jobs:
+      fetch-pandoc:
+        executor: python
+        steps:
+          - run:
+              name: curl pandoc from github
+              command: |
+                curl -s https://api.github.com/repos/jgm/pandoc/releases/latest \
+                | grep "browser_download_url.*tar.gz" \
+                | cut -d : -f 2,3 \
+                | tr -d \" \
+                | wget -qi -
+
+                tar xvzf pandoc-*.tar.gz
+                zip -r pandoc_binary.zip pandoc-*/bin/pandoc
+                ls -al
       build_sam:
         executor: python
         steps:
