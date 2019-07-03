@@ -27,6 +27,9 @@ jobs:
   fetch-pandoc:
     docker:
       - image: 'circleci/python:2.7'
+    environment:
+      AWS_REGION: eu-west-1
+      AWS_SHARED_CREDENTIALS_FILE: ~/project/credentials
     steps:
       - run:
           name: curl pandoc from github
@@ -45,6 +48,9 @@ jobs:
           to: 's3://alchemy.service.justice.gov.uk'
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_REGION
+          arguments: |
+            --profile alchemy-ci
   build_sam:
     executor: alchemy-build/python
     steps:
