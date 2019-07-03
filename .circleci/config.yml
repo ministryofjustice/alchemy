@@ -3,15 +3,16 @@ version: 2.1
 workflows:
   path_to_live:
     jobs:
-      - alchemy-build/fetch-pandoc:
+      - fetch-pandoc:
           name: fetch_pandoc
-      - alchemy-build/build_sam:
+      - build_sam:
           name: build_sam
           requires: [fetch_pandoc]
 
 orbs:
+  aws-s3: circleci/aws-s3@1.0.11
+
   alchemy-build:
-    aws-s3: circleci/aws-s3@1.0.11
     commands:
       install_sam_cli:
         steps:
@@ -21,40 +22,38 @@ orbs:
     executors:
       python:
         docker: [image: circleci/python]
-      lamci:
-        docker: [image: lambci/lambda-base-2:build]
 
-    jobs:
-      fetch-pandoc:
-        docker:
-          - image: 'circleci/python:2.7'
-        steps:
-          - run:
-              name: curl pandoc from github
-              command: |
-                curl -s https://api.github.com/repos/jgm/pandoc/releases/latest \
-                | grep "browser_download_url.*tar.gz" \
-                | cut -d : -f 2,3 \
-                | tr -d \" \
-                | wget -qi -
+jobs:
+  fetch-pandoc:
+    docker:
+      - image: 'circleci/python:2.7'
+    steps:
+      - run:
+          name: curl pandoc from github
+          command: |
+            curl -s https://api.github.com/repos/jgm/pandoc/releases/latest \
+            | grep "browser_download_url.*tar.gz" \
+            | cut -d : -f 2,3 \
+            | tr -d \" \
+            | wget -qi -
 
-                tar xvzf pandoc-*.tar.gz
-                zip -r pandoc_binary.zip pandoc-*/bin/pandoc
-                ls -al
-          - aws-s3/copy:
-              from: pandoc_binary.zip
-              to: 's3://alchemy.service.justice.gov.uk'
-              aws-access-key-id: ${AWS_ACCESS_KEY_ID}
-              aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
-      build_sam:
-        executor: python
-        steps:
-          - checkout
-          - install_sam_cli
-          - setup_remote_docker:
-              version: 18.06.0-ce
-              docker_layer_caching: false
-          - run:
-              name:
-              command: |
-                sam build
+            tar xvzf pandoc-*.tar.gz
+            zip -r pandoc_binary.zip pandoc-*/bin/pandoc
+            ls -al
+      - aws-s3/copy:
+          from: pandoc_binary.zip
+          to: 's3://alchemy.service.justice.gov.uk'
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+  build_sam:
+    executor: alchemy-build/python
+    steps:
+      - checkout
+      - alchemy-build/install_sam_cli
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: false
+      - run:
+          name:
+          command: |
+            sam build
