@@ -11,6 +11,7 @@ workflows:
 
 orbs:
   alchemy-build:
+    aws-s3: circleci/aws-s3@1.0.11
     commands:
       install_sam_cli:
         steps:
@@ -25,7 +26,8 @@ orbs:
 
     jobs:
       fetch-pandoc:
-        executor: python
+        docker:
+          - image: 'circleci/python:2.7'
         steps:
           - run:
               name: curl pandoc from github
@@ -39,6 +41,11 @@ orbs:
                 tar xvzf pandoc-*.tar.gz
                 zip -r pandoc_binary.zip pandoc-*/bin/pandoc
                 ls -al
+          - aws-s3/copy:
+              from: pandoc_binary.zip
+              to: 's3://alchemy.service.justice.gov.uk'
+              aws-access-key-id: ${AWS_ACCESS_KEY_ID}
+              aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
       build_sam:
         executor: python
         steps:
