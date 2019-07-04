@@ -67,6 +67,12 @@ jobs:
           name: Package
           command: |
             sam package \
-            --output-template-file packaged.yaml \
-            --s3-bucket alchemy.service.justice.gov.uk \
-            --profile alchemy-ci
+              --output-template-file packaged.yaml \
+              --s3-bucket alchemy.service.justice.gov.uk \
+              --profile alchemy-ci
+      - run:
+          name: Publish
+          command: |
+            sam publish \
+              --template packaged.yaml \
+              --region eu-west-1
