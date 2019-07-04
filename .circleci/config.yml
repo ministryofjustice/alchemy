@@ -29,7 +29,7 @@ jobs:
       - image: 'circleci/python:2.7'
     environment:
       AWS_REGION: eu-west-1
-      AWS_SHARED_CREDENTIALS_FILE: credentials
+      AWS_SHARED_CREDENTIALS_FILE: ~/project/credentials
     steps:
       - checkout
       - run:
@@ -45,10 +45,6 @@ jobs:
             zip -r pandoc_binary.zip pandoc-*/bin/pandoc
             ls -al
       - aws-cli/install
-#      - aws-cli/configure:
-#          aws-access-key-id: AWS_ACCESS_KEY_ID
-#          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-#          aws-region: AWS_REGION
       - run:
           name: copy to s3
           command: |
