@@ -10,7 +10,6 @@ workflows:
           requires: [fetch_pandoc]
 
 orbs:
-  aws-s3: circleci/aws-s3@1.0.11
   aws-cli: circleci/aws-cli@0.1.13
   alchemy-build:
     commands:
@@ -31,32 +30,25 @@ jobs:
       AWS_REGION: eu-west-1
       AWS_SHARED_CREDENTIALS_FILE: ~/project/credentials
     steps:
+      - aws-cli/install
       - checkout
       - run:
-          name: curl pandoc from github
+          name: get latest pandoc
           command: |
             curl -s https://api.github.com/repos/jgm/pandoc/releases/latest \
             | grep "browser_download_url.*tar.gz" \
             | cut -d : -f 2,3 \
             | tr -d \" \
             | wget -qi -
-
-            tar xvzf pandoc-*.tar.gz
-            zip -r pandoc_binary.zip pandoc-*/bin/pandoc
-            ls -al
-      - aws-cli/install
       - run:
-          name: copy to s3
-          command: |
-            aws s3 cp pandoc_binary.zip s3://alchemy.service.justice.gov.uk/ --profile alchemy-ci
-#      - aws-s3/copy:
-#          from: pandoc_binary.zip
-#          to: 's3://alchemy.service.justice.gov.uk'
-#          aws-access-key-id: AWS_ACCESS_KEY_ID
-#          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-#          aws-region: AWS_REGION
-#          arguments: |
-#            --profile alchemy-ci
+          name: extract pandoc
+          command: tar xvzf pandoc-*.tar.gz
+      - run:
+          name: zip pandoc
+          command: zip -r pandoc_binary.zip pandoc-*/bin/pandoc
+      - run:
+          name: copy pandoc to s3
+          command: aws s3 cp pandoc_binary.zip s3://alchemy.service.justice.gov.uk/ --profile alchemy-ci
   build_sam:
     executor: alchemy-build/python
     steps:
