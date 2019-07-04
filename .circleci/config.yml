@@ -29,7 +29,9 @@ jobs:
       - image: 'circleci/python:2.7'
     environment:
       AWS_REGION: eu-west-1
+      AWS_SHARED_CREDENTIALS_FILE: credentials
     steps:
+      - checkout
       - run:
           name: curl pandoc from github
           command: |
@@ -43,14 +45,14 @@ jobs:
             zip -r pandoc_binary.zip pandoc-*/bin/pandoc
             ls -al
       - aws-cli/install
-      - aws-cli/configure:
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          aws-region: AWS_REGION
+#      - aws-cli/configure:
+#          aws-access-key-id: AWS_ACCESS_KEY_ID
+#          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+#          aws-region: AWS_REGION
       - run:
           name: copy to s3
           command: |
-            aws s3 cp pandoc_binary.zip s3://alchemy.service.justice.gov.uk
+            aws s3 cp pandoc_binary.zip s3://alchemy.service.justice.gov.uk/ --profile alchemy-ci
 #      - aws-s3/copy:
 #          from: pandoc_binary.zip
 #          to: 's3://alchemy.service.justice.gov.uk'
