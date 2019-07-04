@@ -4,10 +4,21 @@ Description: >
   Serverless lambda using a pandoc lambda layer to convert .docx documents
   into .pdf
 
-  This lambda requires a pandoc biniary as a lambda layer
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: Alchemy
+    Description: Alchemy is AWS lambda that converts documents using pandoc
+    Author: Tom Withers @ The Ministry of Justice
+    SpdxLicenseId: MIT
+    LicenseUrl: LICENSE.md
+    ReadmeUrl: README.md
+    Labels: ['tests']
+    HomePageUrl: https://github.com/ministryofjustice/alchemy
+    SemanticVersion: 0.0.1
+    SourceCodeUrl: https://github.com/ministryofjustice/alchemy
 
 Resources:
-  HelloWorldFunction:
+  Alchemy:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       Handler: app.lambda_handler
@@ -31,11 +42,11 @@ Resources:
         - python3.7
 
 Outputs:
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
+  Alchemy:
+    Description: "Alchemy Lambda Function ARN"
     Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
+  AlchemyIamRole:
+    Description: "Implicit IAM Role created for Alchemy"
     Value: !GetAtt HelloWorldFunctionRole.Arn
   LayerArn:
     Value: !Ref SharedLayer

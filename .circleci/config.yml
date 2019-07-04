@@ -76,3 +76,4 @@ jobs:
             sam publish \
               --template packaged.yaml \
               --region eu-west-1
+              --profile alchemy-ci
