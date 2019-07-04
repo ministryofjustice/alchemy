@@ -25,8 +25,8 @@ Resources:
     Type: AWS::Serverless::LayerVersion
     Properties:
       LayerName: pandoc-lambda-layer
-      Description: pandoc binary built to run on AWS Lambda. Built From https://github.com/ministryofjustice/pandoc-aws-lambda-binary
-      ContentUri: s3://toms-lambda-test/pandoc.zip
+      Description: pandoc binary built to run on AWS Lambda. Built From https://github.com/ministryofjustice/alchemy
+      ContentUri: s3://alchemy.service.justice.gov.uk/pandoc_binary.zip
       CompatibleRuntimes:
         - python3.7
 

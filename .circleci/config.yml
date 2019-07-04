@@ -51,13 +51,22 @@ jobs:
           command: aws s3 cp pandoc_binary.zip s3://alchemy.service.justice.gov.uk/ --profile alchemy-ci
   build_sam:
     executor: alchemy-build/python
+    environment:
+      AWS_SHARED_CREDENTIALS_FILE: ~/project/credentials
     steps:
       - checkout
+      - aws-cli/install
       - alchemy-build/install_sam_cli
       - setup_remote_docker:
           version: 18.06.0-ce
           docker_layer_caching: false
       - run:
-          name:
+          name: Build
+          command: sam build
+      - run:
+          name: Package
           command: |
-            sam build
+            sam package \
+            --output-template-file packaged.yaml \
+            --s3-bucket alchemy.service.justice.gov.uk \
+            --profile alchemy-ci
