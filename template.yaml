@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Serverless lambda using a pandoc lambda layer to convert .docx documents
+  into .pdf
+
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: Alchemy
+    Description: Alchemy is AWS lambda that converts documents using pandoc
+    Author: Tom Withers @ The Ministry of Justice
+    SpdxLicenseId: MIT
+    LicenseUrl: LICENSE.md
+    ReadmeUrl: README.md
+    Labels: ['tests']
+    HomePageUrl: https://github.com/ministryofjustice/alchemy
+    SemanticVersion: 0.0.1
+    SourceCodeUrl: https://github.com/ministryofjustice/alchemy
+
+Resources:
+  Alchemy:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Handler: app.lambda_handler
+      CodeUri: src/
+      Runtime: python3.7
+    Policies:
+      - Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+              - 's3:PutObject'
+            Resource: 'arn:aws:s3:::*'
+  SharedLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: pandoc-lambda-layer
+      Description: pandoc binary built to run on AWS Lambda. Built From https://github.com/ministryofjustice/alchemy
+      ContentUri: s3://alchemy.service.justice.gov.uk/pandoc_binary.zip
+      CompatibleRuntimes:
+        - python3.7
+
+Outputs:
+  Alchemy:
+    Description: "Alchemy Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction.Arn
+  AlchemyIamRole:
+    Description: "Implicit IAM Role created for Alchemy"
+    Value: !GetAtt HelloWorldFunctionRole.Arn
+  LayerArn:
+    Value: !Ref SharedLayer
